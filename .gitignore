@@ -1,0 +1,15 @@
+# Intellij project files
+*.iml
+*.ipr
+*.iws
+.idea/
+# Eclipse project files
+.classpath
+.project
+.settings
+maven-eclipse.xml
+# Netbeans configuration
+nb-configuration.xml
+**/nbproject/
+/target/
+.DS_Store
