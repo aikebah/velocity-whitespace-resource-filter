@@ -1,3 +1,5 @@
+[![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/jeremylong/velocity-whitespace-resource-filter/blob/master/LICENCE.txt)
+
 velocity-whitespace-resource-filter
 --------------------------
 The velocity-whitespace-resource-filter is used in Maven builds to remove whitespace from Velocity Templates.
