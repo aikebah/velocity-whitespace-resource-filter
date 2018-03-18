@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VelocityWhitespaceFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">velocity-whitespace-resource-filter</a> &gt; <a href="index.source.html" class="el_package">org.owasp.maven.tools</a> &gt; <span class="el_source">VelocityWhitespaceFilter.java</span></div><h1>VelocityWhitespaceFilter.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018 Jeremy Long.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.owasp.maven.tools;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.maven.shared.filtering.DefaultMavenFileFilter;
+import org.apache.maven.shared.filtering.MavenFileFilter;
+import org.apache.maven.shared.filtering.MavenFilteringException;
+import org.apache.maven.shared.utils.io.FileUtils;
+import org.codehaus.plexus.component.annotations.Component;
+
+/**
+ * Simple resource filter that is used to remove excess whitespace from Velocity
+ * Templates using standard Maven resource filtering. Leading whitespace is
+ * removed from lines and a trailing Velocity comment (##) is appended to each
+ * line to swallow the new line from the resulting output.
+ *
+ * @author Jeremy Long
+ */
+@Component(role = MavenFileFilter.class, hint = &quot;default&quot;)
+<span class="fc" id="L38">public class VelocityWhitespaceFilter extends DefaultMavenFileFilter {</span>
+
+    /**
+     * The extensions that are supported.
+     */
+<span class="fc" id="L43">    private final List&lt;String&gt; extensions = Arrays.asList(&quot;vm&quot;, &quot;vtl&quot;, &quot;vsl&quot;);</span>
+
+    /**
+     * Whether or not the given file should be filtered.
+     *
+     * @param from the file to test
+     * @return true if this filter should transform the file, otherwise false
+     */
+    protected boolean shouldFilter(File from) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (from == null) {</span>
+<span class="fc" id="L53">            return false;</span>
+        }
+<span class="fc" id="L55">        final String ext = FilenameUtils.getExtension(from.getName());</span>
+<span class="fc" id="L56">        return extensions.contains(ext.toLowerCase());</span>
+    }
+
+    /**
+     * {@inheritDoc} Copies the given file using the
+     * {@link org.owasp.maven.tools.VelocityWhitespaceFilteringReader} so that
+     * the Velocity Template copied will output less whitespace.
+     */
+    @Override
+    public void copyFile(File from, File to, boolean filtering, List&lt;FileUtils.FilterWrapper&gt; filterWrappers,
+            String encoding, boolean overwrite) throws MavenFilteringException {
+<span class="fc" id="L67">        List&lt;FileUtils.FilterWrapper&gt; wrappers = filterWrappers;</span>
+<span class="fc bfc" id="L68" title="All 4 branches covered.">        if (filtering &amp;&amp; shouldFilter(from)) {</span>
+<span class="fc" id="L69">            wrappers = new ArrayList&lt;&gt;(filterWrappers);</span>
+<span class="fc" id="L70">            wrappers.add(new VelocityWhitespaceFilterWrapper());</span>
+        }
+<span class="fc" id="L72">        super.copyFile(from, to, filtering, wrappers, encoding, overwrite);</span>
+<span class="fc" id="L73">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>

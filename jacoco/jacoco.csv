@@ -1,0 +1,5 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+velocity-whitespace-resource-filter,org.owasp.maven.tools,VelocityWhitespaceFilteringReader.ReaderCache,0,67,0,10,0,8,0,9,0,4
+velocity-whitespace-resource-filter,org.owasp.maven.tools,VelocityWhitespaceFilteringReader,0,308,3,85,0,63,3,45,0,4
+velocity-whitespace-resource-filter,org.owasp.maven.tools,VelocityWhitespaceFilter,0,62,0,6,0,12,0,6,0,3
+velocity-whitespace-resource-filter,org.owasp.maven.tools,VelocityWhitespaceFilterWrapper,0,8,0,0,0,2,0,2,0,2

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VelocityWhitespaceFilteringReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">velocity-whitespace-resource-filter</a> &gt; <a href="index.source.html" class="el_package">org.owasp.maven.tools</a> &gt; <span class="el_source">VelocityWhitespaceFilteringReader.java</span></div><h1>VelocityWhitespaceFilteringReader.java</h1><pre class="source lang-java linenums">/*
+ * Copyright 2018 Jeremy Long.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.owasp.maven.tools;
+
+import java.io.FilterReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+/**
+ * Reads a Velocity Template and filters leading whitespace and injects Velocity
+ * comments (##) to the end of each line.
+ *
+ * @author Jeremy Long
+ */
+public class VelocityWhitespaceFilteringReader extends FilterReader {
+
+    /**
+     * A cache of the previous three characters read.
+     */
+<span class="fc" id="L35">    private final ReaderCache cache = new ReaderCache();</span>
+    /**
+     * A buffer for added content.
+     */
+<span class="fc" id="L39">    private final Deque&lt;Character&gt; buffer = new ArrayDeque&lt;&gt;();</span>
+
+    /**
+     * Tracks if a velocity comment is being read. Note, these are not filtered.
+     */
+<span class="fc" id="L44">    private boolean inComment = false;</span>
+    /**
+     * Tracks if an uninterpreted section of a velocity template is being read.
+     */
+<span class="fc" id="L48">    private boolean inUninterpretted = false;</span>
+    /**
+     * Tracks if we are starting a new line (we can strip leading spaces).
+     */
+<span class="fc" id="L52">    private boolean isNewLine = true;</span>
+    /**
+     * Tracks if we are at the end of the file.
+     */
+<span class="fc" id="L56">    private boolean isEOF = false;</span>
+
+    /**
+     * Tracks whether or not a velocity variable is being output (e.g.
+     * $prop.something).
+     */
+<span class="fc" id="L62">    private boolean needsTrailingSpace = false;</span>
+
+    /**
+     * Creates a new Velocity whitespace filtering reader.
+     *
+     * @param reader the underlying reader
+     */
+    public VelocityWhitespaceFilteringReader(Reader reader) {
+<span class="fc" id="L70">        super(reader);</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int read() throws IOException {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (!buffer.isEmpty()) {</span>
+<span class="fc" id="L79">            return (int) buffer.pop();</span>
+        }
+<span class="fc" id="L81">        int c = super.read();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (c == -1) {</span>
+<span class="fc" id="L83">            return -1;</span>
+        }
+<span class="fc" id="L85">        cache.push(c);</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (inUninterpretted) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (cache.checkSequence(']', ']', '#')) {</span>
+<span class="fc" id="L89">                inUninterpretted = false;</span>
+            }
+<span class="fc" id="L91">            return c;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        } else if (inComment) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (cache.checkSequence('*', '#')) {</span>
+<span class="fc" id="L94">                inComment = false;</span>
+            }
+<span class="fc" id="L96">            return c;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        } else if (cache.checkSequence('#', '[', '[')) {</span>
+<span class="fc" id="L98">            inUninterpretted = true;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        } else if (cache.checkSequence('#', '*')) {</span>
+<span class="fc" id="L100">            inComment = true;</span>
+        }
+<span class="fc bfc" id="L102" title="All 4 branches covered.">        if (!inComment &amp;&amp; !inUninterpretted) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">            if (isNewLine) {</span>
+<span class="pc bpc" id="L104" title="1 of 8 branches missed.">                while (c == '\t' || c == ' ' || c == '\n' || c == '\r') {</span>
+<span class="fc" id="L105">                    c = super.read();</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">                    if (c == -1) {</span>
+<span class="fc" id="L107">                        return -1;</span>
+                    }
+<span class="fc" id="L109">                    cache.push(c);</span>
+                }
+<span class="fc" id="L111">                isNewLine = false;</span>
+<span class="fc bfc" id="L112" title="All 4 branches covered.">            } else if (c == '\n' || c == '\r') {</span>
+<span class="fc" id="L113">                isNewLine = true;</span>
+<span class="pc bpc" id="L114" title="1 of 6 branches missed.">                if (needsTrailingSpace &amp;&amp; (cache.checkSequence(')', '\n') || cache.checkSequence(')', '\r')</span>
+<span class="pc bpc" id="L115" title="1 of 4 branches missed.">                        || cache.checkSequence(']', '\n') || cache.checkSequence(']', '\r'))) {</span>
+<span class="fc" id="L116">                    needsTrailingSpace = false;</span>
+                }
+                final char retVal;
+<span class="fc bfc" id="L119" title="All 2 branches covered.">                if (needsTrailingSpace) {</span>
+<span class="fc" id="L120">                    buffer.add('#');</span>
+<span class="fc" id="L121">                    retVal = ' ';</span>
+                } else {
+<span class="fc" id="L123">                    retVal = '#';</span>
+                }
+<span class="fc" id="L125">                needsTrailingSpace = false;</span>
+<span class="fc" id="L126">                buffer.add('#');</span>
+<span class="fc" id="L127">                buffer.add((char) c);</span>
+<span class="fc" id="L128">                return retVal;</span>
+            }
+<span class="fc bfc" id="L130" title="All 2 branches covered.">            if (c == '$') {</span>
+<span class="fc" id="L131">                needsTrailingSpace = true;</span>
+<span class="fc bfc" id="L132" title="All 4 branches covered.">            } else if (needsTrailingSpace &amp;&amp; checkIfNeedsTrailingSpace(c)) {</span>
+<span class="fc" id="L133">                needsTrailingSpace = false;</span>
+            }
+        }
+<span class="fc" id="L136">        return (char) c;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int read(char cbuf[], int offset, int length) throws IOException {
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if (isEOF) {</span>
+<span class="fc" id="L145">            return -1;</span>
+        }
+        int n;
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (n = 0; n &lt; length; n++) {</span>
+<span class="fc" id="L149">            final int c = read();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            if (c == -1) {</span>
+<span class="fc" id="L151">                isEOF = true;</span>
+<span class="fc" id="L152">                return n;</span>
+            }
+<span class="fc" id="L154">            cbuf[offset + n] = (char) c;</span>
+        }
+<span class="fc" id="L156">        return n;</span>
+    }
+
+    /**
+     * Determines if the current velocity expression requires a trailing space
+     * before a single line comment is added (##).
+     *
+     * @param c the character to check
+     * @return &lt;code&gt;true&lt;/code&gt; if a whitespace is needed; otherwise
+     * &lt;code&gt;false&lt;/code&gt;
+     */
+    private boolean checkIfNeedsTrailingSpace(int c) {
+<span class="fc bfc" id="L168" title="All 28 branches covered.">        return !(c &gt;= 'a' &amp;&amp; c &lt;= 'z' || c &gt;= 'A' &amp;&amp; c &lt;= 'Z' || c &gt;= '0' &amp;&amp; c &lt;= '9'</span>
+                || c == '-' || c == '!' || c == '_' || c == '.'
+                || c == '(' || c == ')' || c == '[' || c == ']');
+    }
+
+    /**
+     * Small internal cache that is used to track the previous three characters
+     * read.
+     */
+<span class="fc" id="L177">    private static class ReaderCache {</span>
+
+        /**
+         * The cache.
+         */
+<span class="fc" id="L182">        private final int[] cache = new int[3];</span>
+
+        /**
+         * Pushes a new element onto the stack. If more then three characters
+         * have been pushed onto the stack the oldest character is removed.
+         *
+         * @param c the character to push onto the stack
+         */
+        public void push(int c) {
+<span class="fc" id="L191">            cache[0] = cache[1];</span>
+<span class="fc" id="L192">            cache[1] = cache[2];</span>
+<span class="fc" id="L193">            cache[2] = c;</span>
+<span class="fc" id="L194">        }</span>
+
+        /**
+         * Checks if the cache contains the given character sequence.
+         *
+         * @param one character one
+         * @param two character two
+         * @param three character three
+         * @return &lt;code&gt;true&lt;/code&gt; if the cache contains the three characters
+         * in order; otherwise &lt;code&gt;false&lt;/code&gt;
+         */
+        public boolean checkSequence(char one, char two, char three) {
+<span class="fc bfc" id="L206" title="All 6 branches covered.">            return one == cache[0] &amp;&amp; two == cache[1] &amp;&amp; three == cache[2];</span>
+        }
+
+        /**
+         * Checks if the cache contains the given character sequence.
+         *
+         * @param one character one
+         * @param two character two
+         * @return &lt;code&gt;true&lt;/code&gt; if the cache contains the two characters in
+         * order; otherwise &lt;code&gt;false&lt;/code&gt;
+         */
+        public boolean checkSequence(char one, char two) {
+<span class="fc bfc" id="L218" title="All 4 branches covered.">            return one == cache[1] &amp;&amp; two == cache[2];</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.9.201702052155</span></div></body></html>
