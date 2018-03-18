@@ -45,7 +45,7 @@ limitations under the License.
 
     <body>
         <breadcrumbs>
-            <item name="documentation" href="./index.html"/>
+            <item name="Home" href="./index.html"/>
         </breadcrumbs>
         <menu ref="reports" />
     </body>

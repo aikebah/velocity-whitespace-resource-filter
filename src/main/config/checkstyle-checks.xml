@@ -27,11 +27,9 @@
     <module name="JavadocPackage">
         <property name="allowLegacy" value="false"/>
     </module>
-
-    <!-- this causes a ton of noise due to how this is abused in core for dealing with database dialects.-->
-    <!--module name="Translation">
+    <module name="Translation">
         <property name="severity" value="warning"/>
-    </module-->
+    </module>
 
     <module name="FileTabCharacter">
         <property name="eachLine" value="false"/>

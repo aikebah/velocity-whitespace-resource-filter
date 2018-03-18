@@ -46,3 +46,7 @@ must be defined as a dependency of the `maven-resources-plugin:
     </plugins>
 </build>
 ```
+
+Permission to modify and redistribute is granted under the terms of the Apache 2.0 license. See the [LICENSE.txt](https://github.com/jeremylong/velocity-whitespace-resource-filter/blob/master/LICENCE.txt) file for the full license.
+
+Copyright (c) 2018 Jeremy Long. All Rights Reserved.
