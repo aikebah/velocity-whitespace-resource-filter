@@ -29,13 +29,13 @@ if (!FileUtils.contentEquals(file1, file2)) {
 file1 = new File(basedir, "src/main/resources/template.txt");
 file2 = new File(basedir, "target/classes/template.txt");
 if (!FileUtils.contentEquals(file1, file2)) {
-    System.out.println("template.txt in src does not match template.vm in target/classes");
+    System.out.println("template.txt in src does not match template.txt in target/classes");
     return false;
 }
 
 file1 = new File(basedir, "src/main/resources/template.vtl");
 file2 = new File(basedir, "target/classes/template.vtl");
 if (FileUtils.contentEquals(file1, file2)) {
-    System.out.println("template.vtl in target/classes was NOT FILTERED and matches template.vm in src");
+    System.out.println("template.vtl in target/classes was NOT FILTERED and matches template.vtl in src");
     return false;
 }
