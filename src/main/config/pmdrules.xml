@@ -12,7 +12,7 @@
         Saved locally in preparation of the removal of the rulesets in PMD 7
     </description>
 
-    <!-- region The rules of the deprecated basic.xml PMD ruleset -->
+    <!-- region The rules of the deprecated basic.xml PMD ruleset  updated for deprecations -->
     <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
     <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor" />
     <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators" />
@@ -38,18 +38,14 @@
     <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
 
     <rule ref="category/java/performance.xml/BigIntegerInstantiation" />
-    <rule ref="category/java/performance.xml/BooleanInstantiation" />
+    <rule ref="category/java/bestpractices.xml/PrimitiveWrapperInstantiation" />
 
     <rule ref="category/java/design.xml/CollapsibleIfStatements" />
     <rule ref="category/java/design.xml/SimplifiedTernary" />
     <!-- endregion -->
-    <!-- region The rules of the deprecated imports PMD ruleset -->
-    <rule ref="category/java/bestpractices.xml/UnusedImports" />
+    <!-- region The rules of the deprecated imports PMD ruleset updated for deprecations-->
+    <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
 
-    <rule ref="category/java/errorprone.xml/ImportFromSamePackage" />
-
-    <rule ref="category/java/codestyle.xml/DontImportJavaLang" />
-    <rule ref="category/java/codestyle.xml/DuplicateImports" />
     <rule ref="category/java/codestyle.xml/TooManyStaticImports" />
     <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
     <!-- endregion -->
