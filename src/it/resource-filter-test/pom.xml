@@ -50,7 +50,7 @@ limitations under the License.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.3.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.owasp.maven-tools</groupId>

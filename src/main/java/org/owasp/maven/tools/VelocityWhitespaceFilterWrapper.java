@@ -16,7 +16,7 @@
 package org.owasp.maven.tools;
 
 import java.io.Reader;
-import org.apache.maven.shared.utils.io.FileUtils;
+import org.apache.maven.shared.filtering.FilterWrapper;
 
 /**
  * A Maven Filter Wrapper used to add the
@@ -25,7 +25,7 @@ import org.apache.maven.shared.utils.io.FileUtils;
  *
  * @author Jeremy Long
  */
-public class VelocityWhitespaceFilterWrapper extends FileUtils.FilterWrapper {
+public class VelocityWhitespaceFilterWrapper extends FilterWrapper {
 
     /**
      * {@inheritDoc}

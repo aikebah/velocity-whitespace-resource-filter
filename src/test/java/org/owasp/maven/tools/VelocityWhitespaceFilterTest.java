@@ -17,6 +17,9 @@ package org.owasp.maven.tools;
 
 import java.io.File;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.sonatype.plexus.build.incremental.BuildContext;
+
 import static org.junit.Assert.*;
 
 /**
@@ -30,7 +33,7 @@ public class VelocityWhitespaceFilterTest {
      */
     @Test
     public void testShouldFilter() {
-        VelocityWhitespaceFilter instance = new VelocityWhitespaceFilter();
+        VelocityWhitespaceFilter instance = new VelocityWhitespaceFilter(Mockito.mock(BuildContext.class));
         File from = null;
         boolean expResult = false;
         boolean result = instance.shouldFilter(from);
