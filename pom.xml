@@ -285,9 +285,7 @@
                     <linkXRef>true</linkXRef>
                     <sourceEncoding>utf-8</sourceEncoding>
                     <rulesets>
-                        <ruleset>/rulesets/java/basic.xml</ruleset>
-                        <ruleset>/rulesets/java/imports.xml</ruleset>
-                        <ruleset>/rulesets/java/unusedcode.xml</ruleset>
+                        <ruleset>${project.basedir}/src/main/config/pmdrules.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
