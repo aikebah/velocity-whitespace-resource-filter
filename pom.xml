@@ -53,22 +53,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
-        <maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
-        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
-        <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
-        <maven-surefire-report-plugin.version>2.20.1</maven-surefire-report-plugin.version>
-        <maven.invoker.plugin.version>3.0.1</maven.invoker.plugin.version>
-        <maven.site.plugin.version>3.7</maven.site.plugin.version>
-        <doxia-module-markdown.version>1.7</doxia-module-markdown.version>
-        <plexus-component-metadata.version>1.7.1</plexus-component-metadata.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
+        <maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
+        <maven-jxr-plugin.version>3.2.0</maven-jxr-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.0</maven-project-info-reports-plugin.version>
+        <maven-surefire-report-plugin.version>3.0.0-M7</maven-surefire-report-plugin.version>
+        <maven.invoker.plugin.version>3.3.0</maven.invoker.plugin.version>
+        <maven.site.plugin.version>3.12.0</maven.site.plugin.version>
+        <doxia-module-markdown.version>1.11.1</doxia-module-markdown.version>
+        <plexus-component-metadata.version>2.1.1</plexus-component-metadata.version>
         <junit.version>4.12</junit.version>
-        <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
-        <pmd-plugin.version>3.8</pmd-plugin.version>
-        <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+        <checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
+        <pmd-plugin.version>3.17.0</pmd-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
-        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <versions-maven-plugin.version>2.5</versions-maven-plugin.version>
+        <taglist-maven-plugin.version>3.0.0</taglist-maven-plugin.version>
+        <versions-maven-plugin.version>2.11.0</versions-maven-plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -299,12 +299,12 @@
                     <reportSet>
                         <reports>
                             <report>index</report>
-                            <report>cim</report>
+                            <report>ci-management</report>
                             <report>summary</report>
-                            <report>issue-tracking</report>
-                            <report>project-team</report>
+                            <report>issue-management</report>
+                            <report>team</report>
                             <report>scm</report>
-                            <report>license</report>
+                            <report>licenses</report>
                         </reports>
                     </reportSet>
                 </reportSets>
