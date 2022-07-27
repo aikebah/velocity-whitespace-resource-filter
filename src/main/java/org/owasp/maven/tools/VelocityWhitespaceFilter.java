@@ -21,10 +21,13 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.shared.filtering.DefaultMavenFileFilter;
+import org.apache.maven.shared.filtering.FilterWrapper;
 import org.apache.maven.shared.filtering.MavenFileFilter;
 import org.apache.maven.shared.filtering.MavenFilteringException;
-import org.apache.maven.shared.utils.io.FileUtils;
 import org.codehaus.plexus.component.annotations.Component;
+import org.sonatype.plexus.build.incremental.BuildContext;
+
+import javax.inject.Inject;
 
 /**
  * Simple resource filter that is used to remove excess whitespace from Velocity
@@ -41,6 +44,16 @@ public class VelocityWhitespaceFilter extends DefaultMavenFileFilter {
      * The extensions that are supported.
      */
     private final List<String> extensions = Arrays.asList("vm", "vtl", "vsl");
+
+    /**
+     * Constructs a VelocityWhitespaceFilter.
+     *
+     * @param buildContext The buildContext (injected by Maven)
+     */
+    @Inject
+    public VelocityWhitespaceFilter(final BuildContext buildContext) {
+        super(buildContext);
+    }
 
     /**
      * Whether or not the given file should be filtered.
@@ -62,9 +75,9 @@ public class VelocityWhitespaceFilter extends DefaultMavenFileFilter {
      * the Velocity Template copied will output less whitespace.
      */
     @Override
-    public void copyFile(File from, File to, boolean filtering, List<FileUtils.FilterWrapper> filterWrappers,
+    public void copyFile(File from, File to, boolean filtering, List<FilterWrapper> filterWrappers,
             String encoding, boolean overwrite) throws MavenFilteringException {
-        List<FileUtils.FilterWrapper> wrappers = filterWrappers;
+        List<FilterWrapper> wrappers = filterWrappers;
         if (filtering && shouldFilter(from)) {
             wrappers = new ArrayList<>(filterWrappers);
             wrappers.add(new VelocityWhitespaceFilterWrapper());

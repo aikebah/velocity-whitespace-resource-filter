@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.owasp.maven-tools</groupId>
     <artifactId>velocity-whitespace-resource-filter</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <inceptionYear>2018</inceptionYear>
     <name>velocity-whitespace-resource-filter</name>
@@ -53,30 +53,48 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
-        <maven.api.version>3.1.0</maven.api.version>
-        <maven-dependency-plugin.version>3.0.2</maven-dependency-plugin.version>
-        <maven-javadoc-plugin.version>3.0.0-M1</maven-javadoc-plugin.version>
-        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
-        <maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
-        <maven-surefire-report-plugin.version>2.20.1</maven-surefire-report-plugin.version>
-        <maven.invoker.plugin.version>3.0.1</maven.invoker.plugin.version>
-        <maven.site.plugin.version>3.7</maven.site.plugin.version>
-        <doxia-module-markdown.version>1.7</doxia-module-markdown.version>
-        <plexus-component-metadata.version>1.7.1</plexus-component-metadata.version>
+        <maven-dependency-plugin.version>3.3.0</maven-dependency-plugin.version>
+        <maven-javadoc-plugin.version>3.4.0</maven-javadoc-plugin.version>
+        <maven-jxr-plugin.version>3.2.0</maven-jxr-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.0</maven-project-info-reports-plugin.version>
+        <maven-surefire-report-plugin.version>3.0.0-M7</maven-surefire-report-plugin.version>
+        <maven.invoker.plugin.version>3.3.0</maven.invoker.plugin.version>
+        <maven.site.plugin.version>3.12.0</maven.site.plugin.version>
+        <doxia-module-markdown.version>1.11.1</doxia-module-markdown.version>
+        <plexus-component-metadata.version>2.1.1</plexus-component-metadata.version>
         <junit.version>4.12</junit.version>
-        <hamcrest-core.version>1.3</hamcrest-core.version>
-        <checkstyle-plugin.version>3.0.0</checkstyle-plugin.version>
-        <pmd-plugin.version>3.8</pmd-plugin.version>
-        <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
+        <checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
+        <pmd-plugin.version>3.17.0</pmd-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
-        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <versions-maven-plugin.version>2.5</versions-maven-plugin.version>
+        <taglist-maven-plugin.version>3.0.0</taglist-maven-plugin.version>
+        <versions-maven-plugin.version>2.11.0</versions-maven-plugin.version>
     </properties>
     <dependencies>
         <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.plexus</groupId>
+            <artifactId>plexus-build-api</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-filtering</artifactId>
-            <version>${maven.api.version}</version>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-component-annotations</artifactId>
+            <version>1.5.5</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -85,9 +103,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
-            <version>${hamcrest-core.version}</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.6.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -104,6 +122,26 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.2.5</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-component-metadata</artifactId>
@@ -247,9 +285,7 @@
                     <linkXRef>true</linkXRef>
                     <sourceEncoding>utf-8</sourceEncoding>
                     <rulesets>
-                        <ruleset>/rulesets/java/basic.xml</ruleset>
-                        <ruleset>/rulesets/java/imports.xml</ruleset>
-                        <ruleset>/rulesets/java/unusedcode.xml</ruleset>
+                        <ruleset>${project.basedir}/src/main/config/pmdrules.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
@@ -261,12 +297,12 @@
                     <reportSet>
                         <reports>
                             <report>index</report>
-                            <report>cim</report>
+                            <report>ci-management</report>
                             <report>summary</report>
-                            <report>issue-tracking</report>
-                            <report>project-team</report>
+                            <report>issue-management</report>
+                            <report>team</report>
                             <report>scm</report>
-                            <report>license</report>
+                            <report>licenses</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -299,9 +335,9 @@
                 </reportSets>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>${findbugs-maven-plugin.version}</version>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.7.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
