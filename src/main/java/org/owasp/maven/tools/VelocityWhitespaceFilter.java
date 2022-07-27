@@ -45,6 +45,11 @@ public class VelocityWhitespaceFilter extends DefaultMavenFileFilter {
      */
     private final List<String> extensions = Arrays.asList("vm", "vtl", "vsl");
 
+    /**
+     * Constructs a VelocityWhitespaceFilter.
+     *
+     * @param buildContext The buildContext (injected by Maven)
+     */
     @Inject
     public VelocityWhitespaceFilter(final BuildContext buildContext) {
         super(buildContext);
