@@ -18,8 +18,6 @@ package org.owasp.maven.tools;
 import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 /**
  * Reads a Velocity Template and filters leading whitespace and injects Velocity
@@ -33,10 +31,15 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
      * A cache of the previous three characters read.
      */
     private final ReaderCache cache = new ReaderCache();
+    
     /**
-     * A buffer for added content.
+     * Primitive buffer for pending characters (max 3 chars).
+     * Avoids boxing/unboxing overhead of Deque&lt;Character&gt;.
      */
-    private final Deque<Character> buffer = new ArrayDeque<>();
+    private char p0;
+    private char p1;
+    private char p2;
+    private int pCount;
 
     /**
      * Tracks if a velocity comment is being read. Note, these are not filtered.
@@ -50,10 +53,6 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
      * Tracks if we are starting a new line (we can strip leading spaces).
      */
     private boolean isNewLine = true;
-    /**
-     * Tracks if we are at the end of the file.
-     */
-    private boolean isEOF = false;
 
     /**
      * Tracks whether or not a velocity variable is being output (e.g.
@@ -71,12 +70,60 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
     }
 
     /**
+     * Checks if there are pending characters in the buffer.
+     *
+     * @return true if the buffer has pending characters
+     */
+    private boolean hasPending() {
+        return pCount != 0;
+    }
+
+    /**
+     * Enqueues a character to the pending buffer.
+     *
+     * @param ch the character to enqueue
+     */
+    private void enqueue(char ch) {
+        switch (pCount) {
+            case 0:
+                p0 = ch;
+                break;
+            case 1:
+                p1 = ch;
+                break;
+            case 2:
+                p2 = ch;
+                break;
+            default:
+                throw new IllegalStateException("Pending buffer overflow");
+        }
+        pCount++;
+    }
+
+    /**
+     * Dequeues a character from the pending buffer.
+     *
+     * @return the next character from the buffer
+     */
+    private char dequeue() {
+        char ch = p0;
+        if (pCount > 1) {
+            p0 = p1;
+            if (pCount > 2) {
+                p1 = p2;
+            }
+        }
+        pCount--;
+        return ch;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public int read() throws IOException {
-        if (!buffer.isEmpty()) {
-            return (int) buffer.pop();
+        if (hasPending()) {
+            return dequeue();
         }
         int c = super.read();
         if (c == -1) {
@@ -111,20 +158,22 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
                 isNewLine = false;
             } else if (c == '\n' || c == '\r') {
                 isNewLine = true;
-                if (needsTrailingSpace && (cache.checkSequence(')', '\n') || cache.checkSequence(')', '\r')
-                        || cache.checkSequence(']', '\n') || cache.checkSequence(']', '\r'))) {
-                    needsTrailingSpace = false;
+                if (needsTrailingSpace) {
+                    int prev = cache.prev();
+                    if (prev == ')' || prev == ']') {
+                        needsTrailingSpace = false;
+                    }
                 }
                 final char retVal;
                 if (needsTrailingSpace) {
-                    buffer.add('#');
+                    enqueue('#');
                     retVal = ' ';
                 } else {
                     retVal = '#';
                 }
                 needsTrailingSpace = false;
-                buffer.add('#');
-                buffer.add((char) c);
+                enqueue('#');
+                enqueue((char) c);
                 return retVal;
             }
             if (c == '$') {
@@ -133,7 +182,7 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
                 needsTrailingSpace = false;
             }
         }
-        return (char) c;
+        return c;
     }
 
     /**
@@ -141,19 +190,28 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
      */
     @Override
     public int read(char cbuf[], int offset, int length) throws IOException {
-        if (isEOF) {
-            return -1;
+        if (length == 0) {
+            return 0;
         }
-        int n;
-        for (n = 0; n < length; n++) {
-            final int c = read();
-            if (c == -1) {
-                isEOF = true;
-                return n;
+        int n = 0;
+        
+        while (n < length && hasPending()) {
+            cbuf[offset + n++] = dequeue();
+        }
+        
+        while (n < length) {
+            int ch = read();
+            if (ch == -1) {
+                break;
             }
-            cbuf[offset + n] = (char) c;
+            cbuf[offset + n++] = (char) ch;
+            
+            while (n < length && hasPending()) {
+                cbuf[offset + n++] = dequeue();
+            }
         }
-        return n;
+        
+        return n == 0 ? -1 : n;
     }
 
     /**
@@ -177,20 +235,32 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
     private static class ReaderCache {
 
         /**
-         * The cache.
+         * The cache - field-based to avoid array overhead.
+         * a = oldest, b = middle, c = latest
          */
-        private final int[] cache = new int[3];
+        private int a;
+        private int b;
+        private int c;
 
         /**
          * Pushes a new element onto the stack. If more then three characters
          * have been pushed onto the stack the oldest character is removed.
          *
-         * @param c the character to push onto the stack
+         * @param ch the character to push onto the stack
          */
-        public void push(int c) {
-            cache[0] = cache[1];
-            cache[1] = cache[2];
-            cache[2] = c;
+        public void push(int ch) {
+            a = b;
+            b = c;
+            c = ch;
+        }
+
+        /**
+         * Gets the previous (second-to-last) character.
+         *
+         * @return the previous character
+         */
+        public int prev() {
+            return b;
         }
 
         /**
@@ -203,7 +273,7 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
          * in order; otherwise <code>false</code>
          */
         public boolean checkSequence(char one, char two, char three) {
-            return one == cache[0] && two == cache[1] && three == cache[2];
+            return one == a && two == b && three == c;
         }
 
         /**
@@ -215,7 +285,7 @@ public class VelocityWhitespaceFilteringReader extends FilterReader {
          * order; otherwise <code>false</code>
          */
         public boolean checkSequence(char one, char two) {
-            return one == cache[1] && two == cache[2];
+            return one == b && two == c;
         }
     }
 }
