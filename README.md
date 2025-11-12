@@ -39,7 +39,7 @@ must be defined as a dependency of the `maven-resources-plugin:
                 <dependency>
                     <groupId>org.owasp.maven-tools</groupId>
                     <artifactId>velocity-whitespace-resource-filter</artifactId>
-                    <version>1.0.0</version>
+                    <version>2.0.0</version>
                 </dependency>
             </dependencies>
         </plugin>
