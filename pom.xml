@@ -63,7 +63,7 @@
         <doxia-module-markdown.version>1.11.1</doxia-module-markdown.version>
         <plexus-component-metadata.version>2.1.1</plexus-component-metadata.version>
         <junit.version>4.13.2</junit.version>
-        <checkstyle-plugin.version>3.1.2</checkstyle-plugin.version>
+        <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <pmd-plugin.version>3.17.0</pmd-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.5</findbugs-maven-plugin.version>
