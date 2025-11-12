@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jeremylong/velocity-whitespace-resource-filter.svg?branch=master)](https://travis-ci.org/jeremylong/velocity-whitespace-resource-filter) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/jeremylong/velocity-whitespace-resource-filter/blob/master/LICENCE.txt) 
+[![Build Status](https://github.com/jeremylong/velocity-whitespace-resource-filter/actions/workflows/ci.yml/badge.svg)](https://github.com/jeremylong/velocity-whitespace-resource-filter/actions/workflows/ci.yml) [![Apache 2.0 License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://github.com/jeremylong/velocity-whitespace-resource-filter/blob/master/LICENCE.txt) 
 
 velocity-whitespace-resource-filter
 --------------------------
